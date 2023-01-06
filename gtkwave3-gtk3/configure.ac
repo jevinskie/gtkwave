@@ -199,10 +199,10 @@ AC_MSG_RESULT([$STUBIFY])
 
 AC_MSG_CHECKING([if gtk2 or gtk3 should be used])
 
-GTK3=no
+GTK3=yes
 AC_ARG_ENABLE([gtk3],
 [  --enable-gtk3           Causes the GTK+ frontend to be built with gtk3 
-                          instead of gtk2.],
+                          instead of gtk2. Enabled by default.],
 [
 if test "X$enable_gtk3" = "Xno" ; then
 	GTK3=no
@@ -211,7 +211,7 @@ else
 fi
 ],
 [
-GTK3=no
+GTK3=yes
 ])
 
 if test "X$GTK3" = "Xyes" ; then
