@@ -615,7 +615,7 @@ if test "X$GTK3" = "Xyes" ; then
         for _gdk_tgt in $_gdk_tgts;
         do
         if test "x$_gdk_tgt" = xquartz; then
-           PKG_CHECK_MODULES(GTK_MAC, gtk-mac-integration >= 3.0.0)
+           PKG_CHECK_MODULES(GTK_MAC, gtk-mac-integration-gtk3 >= 3.0.0)
            AC_SUBST(GTK_MAC_LIBS)
            AC_SUBST(GTK_MAC_CFLAGS)
 
