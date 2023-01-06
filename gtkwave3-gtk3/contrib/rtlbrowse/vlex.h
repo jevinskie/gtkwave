@@ -24,8 +24,7 @@ extern char *v_preproc_name;
 int yylex(void);
 extern char *yytext;
 
-typedef size_t gtkwave_yy_size_t;
-extern gtkwave_yy_size_t yyleng;
+extern int yyleng;
 
 const char *is_builtin_define (register const char *str, register unsigned int len);
 
