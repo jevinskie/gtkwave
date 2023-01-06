@@ -2505,7 +2505,6 @@ AC_DEFUN([SC_BLOCKING_STYLE], [
 
 AC_DEFUN([SC_TIME_HANDLER], [
     AC_CHECK_HEADERS(sys/time.h)
-    AC_HEADER_TIME
 
     AC_CHECK_FUNCS(gmtime_r localtime_r mktime)
 

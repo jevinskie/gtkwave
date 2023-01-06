@@ -1,11 +1,11 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.59)
-AC_INIT(gtkwave-gtk3, 3.4.0, bybell@rocketmail.com)
+AC_PREREQ([2.71])
+AC_INIT([gtkwave-gtk3],[3.4.0],[bybell@rocketmail.com])
 AC_CONFIG_SRCDIR([src/vcd.c])
-AM_INIT_AUTOMAKE
-AC_CONFIG_HEADER([config.h])
+AM_INIT_AUTOMAKE([subdir-objects])
+AC_CONFIG_HEADERS([config.h])
 AM_MAINTAINER_MODE
 
 # ------------- GSETTINGS -------------------
@@ -485,7 +485,7 @@ AC_CHECK_LIB([pthread], [main])
 need_libz=no
 LIBZ_LDADD=
 LIBZ_CFLAGS=
-        AC_TRY_COMPILE([#include <zlib.h>], [gzdopen(0,"rb");],, [need_libz=yes])
+        AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <zlib.h>]], [[gzdopen(0,"rb");]])],[],[need_libz=yes])
 	if test "$need_libz" = "yes" ; then
 		AC_MSG_ERROR([
 No system libz headers could be found.  Make sure your system has a
@@ -502,7 +502,7 @@ libz installed])
 need_libbz2=no
 LIBBZ2_LDADD=
 LIBBZ2_CFLAGS=
-        AC_TRY_COMPILE([#include <bzlib.h>], [BZ2_bzdopen(0,"rb");],, [need_libbz2=yes])
+        AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <bzlib.h>]], [[BZ2_bzdopen(0,"rb");]])],[],[need_libbz2=yes])
 	if test "$need_libbz2" = "yes" ; then
 		AC_MSG_ERROR([
 No system libbz2 headers could be found.  Make sure your system has a
@@ -539,7 +539,7 @@ LIBXZ_LDADD=
 LIBXZ_CFLAGS=
 if test "X$EXZ" == "Xyes"; then
 	have_liblzma=no
-	AC_TRY_COMPILE([#include <lzma.h>], [lzma_end(NULL);],, [have_liblzma=yes])
+	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <lzma.h>]], [[lzma_end(NULL);]])],[],[have_liblzma=yes])
 	AC_CHECK_LIB([lzma], [lzma_end], [LIBLZMA_LDADD=-llzma] , [have_liblzma=yes])
 	if test "$have_liblzma" = "yes" ; then
 		AC_MSG_ERROR([LZMA support for VZT is enabled, but xz could not be found.
@@ -591,7 +591,7 @@ LIBJUDY_LDADD=
 LIBJUDY_CFLAGS=
 if test "X$EJUDY" == "Xyes"; then
 	have_libjudy=no
-	AC_TRY_COMPILE([#include <Judy.h>], [ JudySLIns (NULL, NULL, NULL);],, [have_libjudy=yes])
+	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <Judy.h>]], [[ JudySLIns (NULL, NULL, NULL);]])],[],[have_libjudy=yes])
 	AC_CHECK_LIB([Judy], [JudySLIns], [LIBJUDY_LDADD=-lJudy] , [have_libjudy=yes])
 	if test "$have_libjudy" = "yes" ; then
 		AC_MSG_ERROR([Judy support is enabled, but could not be found.
@@ -685,7 +685,6 @@ fi
 # Checks for header files.
 AC_FUNC_ALLOCA
 AC_HEADER_DIRENT
-AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS([fcntl.h inttypes.h libintl.h limits.h malloc.h stddef.h stdint.h stdlib.h string.h strings.h sys/time.h unistd.h wchar.h wctype.h getopt.h])
 
@@ -724,7 +723,6 @@ AC_C_INLINE
 AC_TYPE_OFF_T
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
-AC_HEADER_TIME
 AC_STRUCT_TM
 AC_CHECK_TYPES([ptrdiff_t])
 AC_SYS_LARGEFILE
@@ -836,6 +834,55 @@ AC_SUBST(MINGW_LDADD)
 AC_SUBST(TCL_LDADD)
 AC_SUBST(TCL_DEFADD)
 AC_SUBST(TK_LDADD)
+
+# MacOS Universal build
+# From: https://gist.github.com/andrewgrant/477c7037b1fc0dd7275109d3f2254ea9
+# add an --enable-macos-universal-binary flag that when building for mac
+# create a universal x86_64 / arm64 binary
+AC_ARG_ENABLE([macos-universal-binary],
+    [AS_HELP_STRING([--enable-macos-universal-binary],
+            [Create an universal x86_64+arm64 binary when building for macos)])],,
+    [enable_macos_universal_binary=no])
+
+# Determine if we're building for macos/darwin by checking for macos & darwin
+# in the build triple.
+AC_CANONICAL_HOST
+case $host_os in
+  *macos*) macos="yes" ;;
+  *darwin*) macos="yes" ;;
+  *) macos="no" ;;
+esac
+
+# If building for Mac we will pass x86_64 or arm64 to the compiler based
+# on user options or target type.
+AS_IF([test "$macos" = "yes"],[
+  clang_arch_x86_64="no"
+  clang_arch_arm64="no"
+
+  # If building a universal binary ask clang for both
+  AS_IF([test "$enable_macos_universal_binary" = "yes"],[
+      clang_arch_x86_64="yes"
+      clang_arch_arm64="yes"
+  ],[
+    # If building for x86_64 ask for that
+    AS_IF([test "$host_cpu" = "x86_64"],[
+      clang_arch_x86_64="yes"
+    ])
+    # If building for arm64, ask for that
+    AS_IF([test "$host_cpu" = "aarch64"],[
+      clang_arch_arm64="yes"
+    ])
+  ])
+  # set the defines for our makefile
+  AM_CONDITIONAL([CLANG_ARCH_X86_64], [test "$clang_arch_x86_64" = "yes"])
+  AM_CONDITIONAL([CLANG_ARCH_ARM64], [test "$clang_arch_arm64" = "yes"])
+], [
+  # Just set these to false. They need to be present in the else clause to keep
+  # automake happy.
+  AM_CONDITIONAL([CLANG_ARCH_X86_64], [false])
+  AM_CONDITIONAL([CLANG_ARCH_ARM64], [false])
+])
+# END: MacOS Universal build
 
 AC_CONFIG_FILES([Makefile
 		doc/Makefile
