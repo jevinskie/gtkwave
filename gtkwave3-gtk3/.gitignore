@@ -2,6 +2,9 @@
 *.a
 /config.h
 
+# CI build directory
+/build/
+
 # Binaries
 /src/gtkwave
 /src/twinwave
