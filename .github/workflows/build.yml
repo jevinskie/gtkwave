@@ -94,7 +94,7 @@ jobs:
             - name: Cache
               uses: actions/cache@v3.2.2
               with:
-                  path: cached
+                  path: /nix/store
                   key: ${{ runner.os }}-gtkwave-mac-app
             - name: Install Nix
               uses: cachix/install-nix-action@v18
