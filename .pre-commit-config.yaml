@@ -1,0 +1,12 @@
+---
+repos:
+    - repo: https://github.com/adrienverge/yamllint
+      rev: v1.28.0
+      hooks:
+          - id: yamllint
+            args: [-c=.yamllint]
+    - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+      rev: 0.2.2
+      hooks:
+          - id: yamlfmt
+            args: [--width, '200']

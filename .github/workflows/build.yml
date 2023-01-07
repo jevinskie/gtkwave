@@ -1,88 +1,88 @@
-name: 'build'
+---
+name: build
 
 on:
-  push:
-  schedule:
-    - cron: '0 0 * * *' # nightly
+    push:
+    schedule:
+        - cron: 0 0 * * *  # nightly
 
 jobs:
 
-  msys2:
-    if: ${{ false }} # disable for mac testing
-    runs-on: windows-latest
-    strategy:
-        fail-fast: false
-        max-parallel: 2
-        matrix:
-          target: [
-            { msys2: MINGW32, arch: i686 },
-            { msys2: MINGW64, arch: x86_64}
-          ]
-          gtk: [ 2, 3 ]
-    continue-on-error: true
-    defaults:
-      run:
-        shell: msys2 {0}
-    env:
-      MINGW_INSTALLS: ${{ matrix.target.msys2 }}
-    steps:
+    msys2:
+        if: ${{ false }}  # disable for mac testing
+        runs-on: windows-latest
+        strategy:
+            fail-fast: false
+            max-parallel: 2
+            matrix:
+                target:
+                    - {msys2: MINGW32, arch: i686}
+                    - {msys2: MINGW64, arch: x86_64}
+                gtk: [2, 3]
+        continue-on-error: true
+        defaults:
+            run:
+                shell: msys2 {0}
+        env:
+            MINGW_INSTALLS: ${{ matrix.target.msys2 }}
+        steps:
 
-    - run: git config --global core.autocrlf input
-      shell: bash
+            - run: git config --global core.autocrlf input
+              shell: bash
 
-    - uses: actions/checkout@v2
+            - uses: actions/checkout@v2
 
-    - uses: msys2/setup-msys2@v2
-      with:
-        update: true
-        install: >
-          base-devel
-          git
-          mingw-w64-${{ matrix.target.arch }}-toolchain
-          mingw-w64-${{ matrix.target.arch }}-autotools
-        msystem: ${{ matrix.target.msys2 }}
+            - uses: msys2/setup-msys2@v2
+              with:
+                  update: true
+                  install: >
+                      base-devel
+                      git
+                      mingw-w64-${{ matrix.target.arch }}-toolchain
+                      mingw-w64-${{ matrix.target.arch }}-autotools
+                  msystem: ${{ matrix.target.msys2 }}
 
-    - name: Build package
-      working-directory: MSYS2/gtk${{ matrix.gtk }}
-      run: |
-        tries=0
-        # Try building three times due to the arbitrary 'Bad address' error
-        while [ $tries -lt 3 ]; do
-          makepkg-mingw --noconfirm --noprogressbar -sCLfc && exit 0
-          tries=$((tries+1))
-        done
-        exit 1
+            - name: Build package
+              working-directory: MSYS2/gtk${{ matrix.gtk }}
+              run: |
+                  tries=0
+                  # Try building three times due to the arbitrary 'Bad address' error
+                  while [ $tries -lt 3 ]; do
+                    makepkg-mingw --noconfirm --noprogressbar -sCLfc && exit 0
+                    tries=$((tries+1))
+                  done
+                  exit 1
 
-    - name: Install and create standalone package
-      working-directory: ./MSYS2/gtk${{ matrix.gtk }}
-      run: |
-        pacman -U --noconfirm mingw-*gtkwave*.pkg.tar.zst
-        mv mingw-*gtkwave*.pkg.tar.zst ../../
-        ../standalone_pkg.sh
+            - name: Install and create standalone package
+              working-directory: ./MSYS2/gtk${{ matrix.gtk }}
+              run: |
+                  pacman -U --noconfirm mingw-*gtkwave*.pkg.tar.zst
+                  mv mingw-*gtkwave*.pkg.tar.zst ../../
+                  ../standalone_pkg.sh
 
-    - uses: actions/upload-artifact@v2
-      with:
-        path: |
-          mingw-*gtkwave*.pkg.tar.zst
-          gtkwave_*_standalone.tgz
+            - uses: actions/upload-artifact@v2
+              with:
+                  path: |
+                      mingw-*gtkwave*.pkg.tar.zst
+                      gtkwave_*_standalone.tgz
 
-  nightly:
-    if: ${{ false }} # disable for mac testing
-    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
-    needs: [ msys2 ]
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/download-artifact@v2
-    - uses: eine/tip@master
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        tag: 'nightly'
-        rm: true
-        files: artifact/*
+    nightly:
+        if: ${{ false }}  # disable for mac testing
+        # if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+        needs: [msys2]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/download-artifact@v2
+            - uses: eine/tip@master
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  tag: nightly
+                  rm: true
+                  files: artifact/*
 
-  mac-app:
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
+    mac-app:
+        runs-on: macos-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Setup tmate session
+              uses: mxschmitt/action-tmate@v3
