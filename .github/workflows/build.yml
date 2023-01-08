@@ -124,8 +124,8 @@ jobs:
                   limit-access-to-actor: true
             - name: Prep cache directories
               run: |
-                  sudo sh -c "echo nix >> /etc/synthetic.conf"
                   sudo /usr/sbin/diskutil apfs addVolume disk1 APFS "Nix Store" -mountpoint /nix
+                  sudo sh -c "echo nix >> /etc/synthetic.conf"
                   sudo /usr/sbin/dseditgroup -o create -i 30000 nixbld
                   sudo /bin/mkdir -p /nix/store /nix/var/cache/ccache
                   sudo /usr/sbin/chown -R root:nixbld /nix
