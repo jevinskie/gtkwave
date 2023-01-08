@@ -109,7 +109,7 @@ jobs:
         steps:
             - name: Make build dir
               run: mkdir build
-              working-directory: .
+              working-directory: ..
             # Enable tmate debugging of manually-triggered workflows if the input option was provided
             - name: Spawn shell at beginning
               uses: mxschmitt/action-tmate@v3
@@ -121,7 +121,7 @@ jobs:
             - name: Prep cache directories
               run: |
                   sudo /usr/sbin/dseditgroup -o create -i 30000 nixbld
-                  sudo mkdir -p /nix/store /nix/var/cache/ccache
+                  sudo /bin/mkdir -p /nix/store /nix/var/cache/ccache
                   sudo /usr/sbin/chown -R root:nixbld /nix
             - name: Cache
               uses: actions/cache@v3.2.2
