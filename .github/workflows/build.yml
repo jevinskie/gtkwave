@@ -108,7 +108,11 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         steps:
             - name: Make build dir
-              run: mkdir build
+              run: |
+                  /bin/pwd
+                  mkdir build
+                  cd build
+                  /bin/pwd
               working-directory: ..
             # Enable tmate debugging of manually-triggered workflows if the input option was provided
             - name: Spawn shell at beginning
