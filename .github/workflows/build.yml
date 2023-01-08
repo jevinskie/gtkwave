@@ -107,6 +107,8 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v3
             - name: Make build dir
               run: |
                   /bin/pwd
@@ -120,8 +122,6 @@ jobs:
               if: ${{ inputs.debug_at_start && github.event_name == 'workflow_dispatch' }}
               with:
                   limit-access-to-actor: true
-            - name: Checkout Repository
-              uses: actions/checkout@v3
             - name: Prep cache directories
               run: |
                   sudo /usr/sbin/dseditgroup -o create -i 30000 nixbld
