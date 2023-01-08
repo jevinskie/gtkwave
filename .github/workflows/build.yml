@@ -8,7 +8,7 @@ on:
         - cron: 0 0 * * *  # nightly
     workflow_dispatch:
         inputs:
-            debug_enabled:
+            debug_begin:
                 type: boolean
                 description: Spawn a shell at the beginning of a run
                 required: false
@@ -18,6 +18,12 @@ on:
                 description: Spawn a shell if there is a failure
                 required: false
                 default: false
+            debug_end:
+                type: boolean
+                description: Spawn a shell at the end of a run
+                required: false
+                default: false
+
 
 jobs:
 
@@ -100,9 +106,9 @@ jobs:
                 working-directory: build
         steps:
             # Enable tmate debugging of manually-triggered workflows if the input option was provided
-            - name: Setup tmate session
+            - name: Spawn shell at beginning
               uses: mxschmitt/action-tmate@v3
-              if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+              if: ${{ inputs.debug_begin && github.event_name == 'workflow_dispatch' }}
               with:
                   limit-access-to-actor: true
             - name: Checkout Repository
@@ -122,8 +128,8 @@ jobs:
               run: mkdir build
               working-directory: .
             # Debug failures with shell (defaults off)
-            - name: Setup tmate session
+            - name: Spawn shell at end or failure
               uses: mxschmitt/action-tmate@v3
-              if: ${{ failure() && github.event_name == 'workflow_dispatch' && inputs.debug_on_fail }}
+              if: ${{ (failure() || inputs.debug_on_end) && github.event_name == 'workflow_dispatch' }}
               with:
                   limit-access-to-actor: true
