@@ -124,6 +124,7 @@ jobs:
                   limit-access-to-actor: true
             - name: Prep cache directories
               run: |
+                  exit 1
                   sudo sh -c "echo nix >> /etc/synthetic.conf"
                   sudo sh -c "echo LABEL=Nix\040Store /nix apfs rw,nobrowse,suid,owners >> /etc/fstab"
                   sudo /usr/sbin/diskutil apfs addVolume disk1 APFS "Nix Store" -mountpoint /nix
