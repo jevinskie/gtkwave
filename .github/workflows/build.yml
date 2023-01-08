@@ -1,15 +1,23 @@
 ---
-name: build
+# yaml-language-servzer: $schema=https://json.schemastore.org/github-workflow.json
+name: Build GTKWave
 
 on:
     push:
     schedule:
         - cron: 0 0 * * *  # nightly
+    workflow_dispatch:
+        inputs:
+            debug_enabled:
+                type: boolean
+                description: Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)
+                required: false
+                default: false
 
 jobs:
 
     msys2:
-        if: ${{ false }}  # disable for mac testing
+        if: false  # disable for mac testing
         runs-on: windows-latest
         strategy:
             fail-fast: false
@@ -67,7 +75,7 @@ jobs:
                       gtkwave_*_standalone.tgz
 
     nightly:
-        if: ${{ false }}  # disable for mac testing
+        if: false # disable for mac testing
         # if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
         needs: [msys2]
         runs-on: ubuntu-latest
@@ -86,6 +94,12 @@ jobs:
             run:
                 working-directory: build
         steps:
+            # Enable tmate debugging of manually-triggered workflows if the input option was provided
+            - name: Setup tmate session
+              uses: mxschmitt/action-tmate@v3
+              if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+              with:
+                  limit-access-to-actor: true
             - name: Make build dir
               run: mkdir build
               working-directory: .
@@ -98,3 +112,7 @@ jobs:
                   key: ${{ runner.os }}-gtkwave-mac-app
             - name: Install Nix
               uses: cachix/install-nix-action@v18
+              with:
+                  extra_nix_config: |
+                      extra-platforms = x86_64-darwin aarch64-darwin
+                      experimental-features = nix-command flakes
