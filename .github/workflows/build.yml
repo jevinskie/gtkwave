@@ -104,6 +104,8 @@ jobs:
         defaults:
             run:
                 working-directory: build
+                env: |
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         steps:
             # Enable tmate debugging of manually-triggered workflows if the input option was provided
             - name: Spawn shell at beginning
@@ -113,11 +115,18 @@ jobs:
                   limit-access-to-actor: true
             - name: Checkout Repository
               uses: actions/checkout@v3
-            # Nothing to cache yet?
-            # - name: Cache
-            #   uses: actions/cache@v3.2.2
-            #   with:
-            #       key: ${{ runner.os }}-gtkwave-mac-app
+            - name: Prep cache directories
+              run: |
+                  sudo /usr/sbin/dseditgroup -o create -i 30000 nixbld
+                  sudo mkdir -p /nix/store /nix/var/cache/ccache
+                  sudo /usr/sbin/chown -R root:nixbld /nix
+            - name: Cache
+              uses: actions/cache@v3.2.2
+              with:
+                  key: ${{ runner.os }}-gtkwave-mac-app
+                  path: >
+                      /nix/store
+                      /nix/var/cache/ccache
             - name: Install Nix
               uses: cachix/install-nix-action@v18
               with:

@@ -2,8 +2,8 @@
 *.a
 /config.h
 
-# CI build directory
-/build/
+# nix build directory
+/result
 
 # Binaries
 /src/gtkwave
