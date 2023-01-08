@@ -110,7 +110,7 @@ jobs:
             - name: Make build dir
               run: |
                   /bin/pwd
-                  mkdir build
+                  mkdir -p gtkwave/build
                   cd build
                   /bin/pwd
               working-directory: ..
