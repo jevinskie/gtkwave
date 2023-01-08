@@ -126,7 +126,7 @@ jobs:
             - name: Prep cache directories
               run: |
                   sudo sh -c "echo nix >> /etc/synthetic.conf"
-                  sudo /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t
+                  sudo /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t || true
                   sudo sh -c "echo 'LABEL=Nix\\\040Store /nix apfs rw,nobrowse,suid,owners' > /etc/fstab"
                   sudo /usr/sbin/diskutil apfs addVolume disk1 APFS "Nix Store" -mountpoint /nix
                   sudo /usr/sbin/dseditgroup -o create -i 30000 nixbld
