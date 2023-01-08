@@ -110,7 +110,11 @@ jobs:
             - name: Checkout Repository
               uses: actions/checkout@v3
             - name: Make build dir
-              run: mkdir -p build
+              run: |
+                  /bin/pwd
+                  mkdir -p gtkwave/build
+                  cd gtkwave/build
+                  /bin/pwd
               working-directory: ..
             # Enable tmate debugging of manually-triggered workflows if the input option was provided
             - name: Spawn shell at beginning
