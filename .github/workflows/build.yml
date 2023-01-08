@@ -107,6 +107,9 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         steps:
+            - name: Make build dir
+              run: mkdir build
+              working-directory: .
             # Enable tmate debugging of manually-triggered workflows if the input option was provided
             - name: Spawn shell at beginning
               uses: mxschmitt/action-tmate@v3
@@ -134,9 +137,7 @@ jobs:
                   extra_nix_config: |
                       extra-platforms = x86_64-darwin aarch64-darwin
                       experimental-features = nix-command flakes
-            - name: Make build dir
-              run: mkdir build
-              working-directory: .
+
             # Debug failures with shell (defaults off)
             - name: Spawn shell at end or failure
               uses: mxschmitt/action-tmate@v3
