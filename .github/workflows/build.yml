@@ -111,7 +111,7 @@ jobs:
               run: |
                   /bin/pwd
                   mkdir -p gtkwave/build
-                  cd build
+                  cd gtkwave/build
                   /bin/pwd
               working-directory: ..
             # Enable tmate debugging of manually-triggered workflows if the input option was provided
