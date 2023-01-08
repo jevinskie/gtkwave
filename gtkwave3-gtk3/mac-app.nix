@@ -27,14 +27,6 @@ stdenv.mkDerivation rec {
   buildInputs = [ bzip2 glib gperf gtk3 judy tcl tk xz ]
     ++ lib.optional stdenv.isDarwin gtk-mac-integration;
 
-  # fix compilation under Darwin
-  # remove these patches upon next release
-  # https://github.com/gtkwave/gtkwave/pull/136
-  patches = [
-    ./0001-Fix-detection-of-quartz-in-gdk-3.0-target.patch
-    ./0002-Check-GDK_WINDOWING_X11-macro-when-using-GtkPlug.patch
-  ];
-
   configureFlags = [
     "--with-tcl=${tcl}/lib"
     "--with-tk=${tk}/lib"
