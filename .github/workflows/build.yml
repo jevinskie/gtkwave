@@ -113,10 +113,11 @@ jobs:
                   limit-access-to-actor: true
             - name: Checkout Repository
               uses: actions/checkout@v3
-            - name: Cache
-              uses: actions/cache@v3.2.2
-              with:
-                  key: ${{ runner.os }}-gtkwave-mac-app
+            # Nothing to cache yet?
+            # - name: Cache
+            #   uses: actions/cache@v3.2.2
+            #   with:
+            #       key: ${{ runner.os }}-gtkwave-mac-app
             - name: Install Nix
               uses: cachix/install-nix-action@v18
               with:
