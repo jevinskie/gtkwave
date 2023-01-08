@@ -106,6 +106,7 @@ jobs:
                 working-directory: build
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         steps:
             - name: Checkout Repository
               uses: actions/checkout@v3
@@ -124,9 +125,9 @@ jobs:
                   limit-access-to-actor: true
             - name: Prep cache directories
               run: |
-                  exit 1
                   sudo sh -c "echo nix >> /etc/synthetic.conf"
-                  sudo sh -c "echo LABEL=Nix\040Store /nix apfs rw,nobrowse,suid,owners >> /etc/fstab"
+                  sudo /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t
+                  sudo sh -c "echo 'LABEL=Nix\\\040Store /nix apfs rw,nobrowse,suid,owners' > /etc/fstab"
                   sudo /usr/sbin/diskutil apfs addVolume disk1 APFS "Nix Store" -mountpoint /nix
                   sudo /usr/sbin/dseditgroup -o create -i 30000 nixbld
                   sudo /bin/mkdir -p /nix/store /nix/var/cache/ccache
