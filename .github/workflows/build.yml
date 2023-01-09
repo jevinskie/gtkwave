@@ -123,30 +123,31 @@ jobs:
               if: ${{ inputs.debug_at_start && github.event_name == 'workflow_dispatch' }}
               with:
                   limit-access-to-actor: true
-            - name: Prep cache directories
-              run: |
-                  sudo sh -c "echo nix >> /etc/synthetic.conf"
-                  sudo /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t || true
-                  sudo sh -c "echo 'LABEL=Nix\\\040Store /nix apfs rw,nobrowse,suid,owners' > /etc/fstab"
-                  sudo /usr/sbin/diskutil apfs addVolume disk1 APFS "Nix Store" -mountpoint /nix
-                  sudo /usr/sbin/dseditgroup -o create -i 30000 nixbld
-                  sudo /bin/mkdir -p /nix/store /nix/var/cache/ccache
-                  sudo /usr/sbin/chown -R root:nixbld /nix
-            - name: Cache
-              uses: actions/cache@v3.2.2
-              with:
-                  key: ${{ runner.os }}-gtkwave-mac-app
-                  path: |
-                      /nix/store
-                      /nix/var/cache/ccache
+            # - name: Prep cache directories
+            #   run: |
+            #       sudo sh -c "echo nix >> /etc/synthetic.conf"
+            #       sudo /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t || true
+            #       sudo sh -c "echo 'LABEL=Nix\\\040Store /nix apfs rw,nobrowse,suid,owners' > /etc/fstab"
+            #       sudo /usr/sbin/diskutil apfs addVolume disk1 APFS "Nix Store" -mountpoint /nix
+            #       sudo /usr/sbin/dseditgroup -o create -i 30000 nixbld
+            #       sudo /bin/mkdir -p /nix/store /nix/var/cache/ccache
+            #       sudo /usr/sbin/chown -R root:nixbld /nix
+            # - name: Cache
+            #   uses: actions/cache@v3.2.2
+            #   with:
+            #       key: ${{ runner.os }}-gtkwave-mac-app
+            #       path: |
+            #           /nix/store
+            #           /nix/var/cache/ccache
             - name: Install Nix
               uses: cachix/install-nix-action@master
               with:
                 #   github_access_token: ${{ secrets.GITHUB_TOKEN }}
                   extra_nix_config: |
-                      extra-platforms = x86_64-darwin aarch64-darwin
+                      access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
                       experimental-features = nix-command flakes
-                      access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}"
+                      extra-platforms = x86_64-darwin aarch64-darwin
+                      max-jobs = auto
             - name: nix build Mac app
               run: |
                   nix build --file ../mac-app.nix
