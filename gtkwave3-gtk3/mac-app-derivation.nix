@@ -1,4 +1,7 @@
-{ bzip2
+{ autoconf
+, autogen
+, automake
+, bzip2
 , ccacheStdenv
 , fetchurl
 , glib
@@ -21,7 +24,7 @@ ccacheStdenv.mkDerivation rec {
 
   src = ./.;
 
-  nativeBuildInputs = [ pkg-config wrapGAppsHook ];
+  nativeBuildInputs = [ autoconf automake autogen pkg-config wrapGAppsHook ];
   buildInputs = [ bzip2 glib gperf gtk3 judy tcl tk xz ]
     ++ lib.optional stdenv.isDarwin gtk-mac-integration;
 
@@ -29,6 +32,7 @@ ccacheStdenv.mkDerivation rec {
   preConfigure = ''
     export CCACHE_DIR=/nix/var/cache/ccache
     export CCACHE_UMASK=007
+    ./autogen.sh
   '';
   configureFlags = [
     "--with-tcl=${tcl}/lib"

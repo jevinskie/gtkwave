@@ -147,6 +147,9 @@ jobs:
                       extra-platforms = x86_64-darwin aarch64-darwin
                       experimental-features = nix-command flakes
 
+            - name: nix-build
+              run: |
+                  nix build --file mac-app.nix
             # Debug failures with shell (defaults off)
             - name: Spawn shell at end or failure
               uses: mxschmitt/action-tmate@v3
