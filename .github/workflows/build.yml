@@ -149,7 +149,7 @@ jobs:
                       access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}"
             - name: nix build Mac app
               run: |
-                  nix build --file mac-app.nix
+                  nix build --file ../mac-app.nix
             # Debug failures with shell (defaults off)
             - name: Spawn shell at end or failure
               uses: mxschmitt/action-tmate@v3
