@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o xtrace
+
+
+SOURCE_DIR=$(dirname "$0")
+CONFIGURE_SCRIPT="$SOURCE_DIR/configure"
+
+echo dollar hash: $#
+echo foo: "$@"
+
+# Initialize the list of passthrough options
+PASSTHROUGH_OPTIONS=()
+
+echo dollar hash2: $#
+echo foo2: "$@"
+
+# Process the options
+while [ $# -ge 1 ]; do
+    case "$1" in
+        -p|--prefix)
+            PREFIX=$(readlink -f "$2")
+            PASSTHROUGH_OPTIONS+=("$1")
+            PASSTHROUGH_OPTIONS+=("$PREFIX")
+            shift
+            shift
+            ;;
+        --)
+            shift
+            ;;
+        *)
+            # Passthrough option
+            PASSTHROUGH_OPTIONS+=("$1")
+            shift
+            ;;
+    esac
+done
+
+# Run the configure script with the unknown options
+"$CONFIGURE_SCRIPT" "${PASSTHROUGH_OPTIONS[@]}"

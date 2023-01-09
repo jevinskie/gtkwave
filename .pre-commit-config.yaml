@@ -16,5 +16,5 @@ repos:
           - id: shellcheck
             files: |
                 (?x)(
-                    ^gtkwave3-gtk3/build-mac-app\.sh$
+                    ^gtkwave3-gtk3/configure-mac-app$
                 )
