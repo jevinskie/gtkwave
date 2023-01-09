@@ -140,7 +140,7 @@ jobs:
                       /nix/store
                       /nix/var/cache/ccache
             - name: Install Nix
-              uses: cachix/install-nix-action@main
+              uses: cachix/install-nix-action@master
               with:
                   github_access_token: ${{ secrets.GITHUB_TOKEN }}
                   extra_nix_config: |
