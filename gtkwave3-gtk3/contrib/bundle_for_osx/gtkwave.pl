@@ -1,5 +1,7 @@
 #!/usr/bin/perl
-use Switch;
+
+# 10.6 Snow Leopard (2009) includes Perl 5.10 which includes 'switch'
+use feature "switch";
 
 # perl-based launcher for gtkwave app:
 # this more-or-less duplicates "normal" command line functionality
@@ -43,8 +45,13 @@ $long_options=
                 ["repperiod", 1, 0, 'P'],
                 ["output", 1, 0, 'O' ],
                 ["slider-zoom", 0, 0, 'z'],
-                ["rpc", 1, 0, '1' ],
+                ["rpcid", 1, 0, '1' ],
                 ["chdir", 1, 0, '2'],
+                ["restore", 0, 0, '3'],
+                ["rcvar", 1, 0, '4'],
+                ["sstexclude", 1, 0, '5'],
+                ["dark", 0, 0, '6'],
+                ["saveonexit", 0, 0, '7'],
                 ];
 
 $long_options_size = scalar(@$long_options);
@@ -95,11 +102,11 @@ for($i=0 ; $i < $arg_cnt ; $i=$i+1)
 		}
 		else
 		{
-		switch($non_flags_cnt)
+		for($non_flags_cnt)
 			{
-			case 0	{ $non_flags[$non_flags_cnt] = "--dump"; $non_flags_cnt = $non_flags_cnt + 1; }
-			case 2	{ $non_flags[$non_flags_cnt] = "--save"; $non_flags_cnt = $non_flags_cnt + 1; }
-			case 4	{ $non_flags[$non_flags_cnt] = "--rcfile"; $non_flags_cnt = $non_flags_cnt + 1; }
+			when (0) { $non_flags[$non_flags_cnt] = "--dump"; $non_flags_cnt = $non_flags_cnt + 1; }
+			when (2) { $non_flags[$non_flags_cnt] = "--save"; $non_flags_cnt = $non_flags_cnt + 1; }
+			when (4) { $non_flags[$non_flags_cnt] = "--rcfile"; $non_flags_cnt = $non_flags_cnt + 1; }
 			}
 
 		$non_flags[$non_flags_cnt] = $arg;
