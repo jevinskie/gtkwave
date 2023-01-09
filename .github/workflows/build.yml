@@ -103,7 +103,7 @@ jobs:
         runs-on: macos-latest
         defaults:
             run:
-                working-directory: build
+                working-directory: gtkwave3-gtk3/build
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -113,8 +113,8 @@ jobs:
             - name: Make build dir
               run: |
                   /bin/pwd
-                  mkdir -p gtkwave/build
-                  cd gtkwave/build
+                  mkdir -p gtkwave/gtkwave3-gtk3/build
+                  cd gtkwave/gtkwave3-gtk3/build
                   /bin/pwd
               working-directory: ..
             # Enable tmate debugging of manually-triggered workflows if the input option was provided
