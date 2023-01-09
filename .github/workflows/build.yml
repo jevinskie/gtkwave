@@ -142,12 +142,12 @@ jobs:
             - name: Install Nix
               uses: cachix/install-nix-action@master
               with:
-                  github_access_token: ${{ secrets.GITHUB_TOKEN }}
+                #   github_access_token: ${{ secrets.GITHUB_TOKEN }}
                   extra_nix_config: |
                       extra-platforms = x86_64-darwin aarch64-darwin
                       experimental-features = nix-command flakes
-
-            - name: nix-build
+                      access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}"
+            - name: nix build Mac app
               run: |
                   nix build --file mac-app.nix
             # Debug failures with shell (defaults off)
