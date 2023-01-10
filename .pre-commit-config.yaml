@@ -17,4 +17,5 @@ repos:
             files: |
                 (?x)(
                     ^gtkwave3-gtk3/configure-mac-app$
+                  | ^gtkwave3-gtk3/mac-app-build.sh$
                 )
