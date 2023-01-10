@@ -3,22 +3,13 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-set -o xtrace
-
 
 SOURCE_DIR=$(dirname "$0")
 CONFIGURE_SCRIPT="$SOURCE_DIR/configure"
 
-echo dollar hash: $#
-echo foo: "$@"
 
-# Initialize the list of passthrough options
+ARCH=""
 PASSTHROUGH_OPTIONS=()
-
-echo dollar hash2: $#
-echo foo2: "$@"
-
-# Process the options
 while [ $# -ge 1 ]; do
     case "$1" in
         -p|--prefix)
@@ -28,7 +19,9 @@ while [ $# -ge 1 ]; do
             shift
             shift
             ;;
-        --)
+        -arch|--arch)
+            ARCH="$2"
+            shift
             shift
             ;;
         *)
@@ -39,5 +32,21 @@ while [ $# -ge 1 ]; do
     esac
 done
 
-# Run the configure script with the unknown options
+case "$ARCH" in
+    x86_64|arm64)
+        export CPPFLAGS="${CFLAGS:+} -arch $ARCH"
+        export CFLAGS="${CFLAGS:+} -arch $ARCH"
+        export CXXFLAGS="${CXXFLAGS:+} -arch $ARCH"
+        export LDFLAGS="${LDFLAGS:+} -arch $ARCH"
+        ;;
+    "")
+        # no --arch given
+        ;;
+    *)
+        echo "Unhandled architecture '$ARCH'"
+        exit 1
+        ;;
+esac
+
+# Run the configure script with the passthrough options
 "$CONFIGURE_SCRIPT" "${PASSTHROUGH_OPTIONS[@]}"
