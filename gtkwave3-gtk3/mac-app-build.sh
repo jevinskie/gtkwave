@@ -27,5 +27,3 @@ for arch in x86_64 arm64; do
     make -j "$(nproc)" install
     popd
 done
-
-"$CONFIGURE_SCRIPT" "${PASSTHROUGH_OPTIONS[@]}"
