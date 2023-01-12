@@ -18,7 +18,7 @@
 , xz
 }:
 
-ccacheStdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "gtkwave";
   version = "HEAD";
 

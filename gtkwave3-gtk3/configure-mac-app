@@ -3,6 +3,7 @@
 set -o errexit
 set -o nounset
 set -o pipefail
+set -o xtrace
 
 SOURCE_DIR=$(dirname "$0")
 CONFIGURE_SCRIPT="$SOURCE_DIR/configure"
